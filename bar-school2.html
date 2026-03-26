@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bar School 🍸</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#080401;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:#0a0502;}
+::-webkit-scrollbar-thumb{background:#3a2008;border-radius:2px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef} = React;
+
+const sget=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}};
+const sset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+
+const IBA=[
+  {id:"u01",name:"Alexander",cat:"The Unforgettables",ingredients:["1oz Cognac","1oz Creme de Cacao","1oz Heavy Cream"]},
+  {id:"u02",name:"Americano",cat:"The Unforgettables",ingredients:["1.5oz Campari","1.5oz Sweet Vermouth","Splash Club Soda","Garnish: Orange Slice"]},
+  {id:"u03",name:"Angel Face",cat:"The Unforgettables",ingredients:["1oz Gin","1oz Apricot Brandy","1oz Calvados"]},
+  {id:"u04",name:"Aviation",cat:"The Unforgettables",ingredients:["2oz Gin","0.75oz Lemon Juice","0.5oz Maraschino Liqueur","0.25oz Creme de Violette"]},
+  {id:"u05",name:"Between the Sheets",cat:"The Unforgettables",ingredients:["1oz White Rum","1oz Cognac","1oz Triple Sec","0.25oz Lemon Juice"]},
+  {id:"u06",name:"Boulevardier",cat:"The Unforgettables",ingredients:["1.5oz Bourbon or Rye","1oz Sweet Vermouth","1oz Campari"]},
+  {id:"u07",name:"Brandy Crusta",cat:"The Unforgettables",ingredients:["2oz Brandy","0.5oz Maraschino Liqueur","0.5oz Curacao","0.75oz Lemon Juice","0.25oz Simple Syrup","2 Dashes Angostura Bitters"]},
+  {id:"u08",name:"Casino",cat:"The Unforgettables",ingredients:["2oz Old Tom Gin","0.5oz Maraschino Liqueur","0.5oz Lemon Juice","2 Dashes Orange Bitters"]},
+  {id:"u09",name:"Clover Club",cat:"The Unforgettables",ingredients:["2oz Gin","0.75oz Lemon Juice","0.75oz Raspberry Syrup","1 Egg White"]},
+  {id:"u10",name:"Daiquiri",cat:"The Unforgettables",ingredients:["2oz White Rum","0.75oz Lime Juice","0.75oz Simple Syrup"]},
+  {id:"u11",name:"Dry Martini",cat:"The Unforgettables",ingredients:["2.5oz Gin","0.5oz Dry Vermouth","Garnish: Olive or Lemon Twist"]},
+  {id:"u12",name:"Gin Fizz",cat:"The Unforgettables",ingredients:["2oz Gin","1oz Lemon Juice","0.75oz Simple Syrup","Top Club Soda"]},
+  {id:"u13",name:"Hanky Panky",cat:"The Unforgettables",ingredients:["1.5oz Gin","1.5oz Sweet Vermouth","0.25oz Fernet-Branca"]},
+  {id:"u14",name:"John Collins",cat:"The Unforgettables",ingredients:["2oz Gin","1oz Lemon Juice","0.5oz Simple Syrup","Top Club Soda","Garnish: Orange and Cherry"]},
+  {id:"u15",name:"Last Word",cat:"The Unforgettables",ingredients:["0.75oz Gin","0.75oz Green Chartreuse","0.75oz Maraschino Liqueur","0.75oz Lime Juice"]},
+  {id:"u16",name:"Manhattan",cat:"The Unforgettables",ingredients:["2oz Rye or Bourbon","1oz Sweet Vermouth","2 Dashes Angostura Bitters","Garnish: Cherry"]},
+  {id:"u17",name:"Martinez",cat:"The Unforgettables",ingredients:["1.5oz Old Tom Gin","1.5oz Sweet Vermouth","0.25oz Maraschino Liqueur","2 Dashes Orange Bitters"]},
+  {id:"u18",name:"Mary Pickford",cat:"The Unforgettables",ingredients:["1.5oz White Rum","1.5oz Pineapple Juice","0.25oz Grenadine","0.25oz Maraschino Liqueur"]},
+  {id:"u19",name:"Monkey Gland",cat:"The Unforgettables",ingredients:["2oz Gin","1oz Orange Juice","1 Dash Grenadine","1 Dash Absinthe"]},
+  {id:"u20",name:"Negroni",cat:"The Unforgettables",ingredients:["1oz Gin","1oz Sweet Vermouth","1oz Campari","Garnish: Orange Peel"]},
+  {id:"u21",name:"Old Fashioned",cat:"The Unforgettables",ingredients:["2oz Bourbon","1 Sugar Cube","2 Dashes Angostura Bitters","Splash Water","Garnish: Orange Peel and Cherry"]},
+  {id:"u22",name:"Paradise",cat:"The Unforgettables",ingredients:["1.5oz Gin","0.75oz Apricot Brandy","1oz Orange Juice"]},
+  {id:"u23",name:"Planters Punch",cat:"The Unforgettables",ingredients:["2oz Dark Rum","1oz Lime Juice","1oz Simple Syrup","1 Dash Angostura Bitters","Top Club Soda"]},
+  {id:"u24",name:"Porto Flip",cat:"The Unforgettables",ingredients:["1.5oz Ruby Port","0.75oz Cognac","1 Egg Yolk","Garnish: Grated Nutmeg"]},
+  {id:"u25",name:"Ramos Gin Fizz",cat:"The Unforgettables",ingredients:["2oz Gin","0.5oz Lemon Juice","0.5oz Lime Juice","0.75oz Simple Syrup","1oz Heavy Cream","1 Egg White","3 Dashes Orange Flower Water","Top Club Soda"]},
+  {id:"u26",name:"Rusty Nail",cat:"The Unforgettables",ingredients:["1.5oz Scotch","0.75oz Drambuie"]},
+  {id:"u27",name:"Sazerac",cat:"The Unforgettables",ingredients:["2oz Rye Whiskey","0.25oz Simple Syrup","3 Dashes Peychauds Bitters","1 Dash Angostura Bitters","Absinthe Rinse","Garnish: Lemon Peel"]},
+  {id:"u28",name:"Screwdriver",cat:"The Unforgettables",ingredients:["2oz Vodka","4oz Orange Juice"]},
+  {id:"u29",name:"Sidecar",cat:"The Unforgettables",ingredients:["2oz Cognac","0.75oz Cointreau","0.75oz Lemon Juice"]},
+  {id:"u30",name:"Stinger",cat:"The Unforgettables",ingredients:["2oz Brandy","1oz White Creme de Menthe"]},
+  {id:"u31",name:"Tuxedo",cat:"The Unforgettables",ingredients:["1.5oz Gin","1.5oz Dry Vermouth","0.5 tsp Maraschino Liqueur","0.25oz Absinthe","2 Dashes Orange Bitters"]},
+  {id:"u32",name:"Whiskey Sour",cat:"The Unforgettables",ingredients:["2oz Bourbon","0.75oz Lemon Juice","0.5oz Simple Syrup","Egg White optional","Garnish: Cherry and Orange"]},
+  {id:"u33",name:"White Lady",cat:"The Unforgettables",ingredients:["1.5oz Gin","1oz Cointreau","0.75oz Lemon Juice"]},
+  {id:"c01",name:"Bellini",cat:"Contemporary Classics",ingredients:["2oz White Peach Puree","4oz Prosecco"]},
+  {id:"c02",name:"Black Russian",cat:"Contemporary Classics",ingredients:["2oz Vodka","1oz Coffee Liqueur"]},
+  {id:"c03",name:"Bloody Mary",cat:"Contemporary Classics",ingredients:["2oz Vodka","4oz Tomato Juice","0.5oz Lemon Juice","2 Dashes Worcestershire","2 Dashes Tabasco","Salt and Pepper","Garnish: Celery"]},
+  {id:"c04",name:"Caipirinha",cat:"Contemporary Classics",ingredients:["2oz Cachaca","Half Lime Muddled","0.5oz Simple Syrup"]},
+  {id:"c05",name:"Champagne Cocktail",cat:"Contemporary Classics",ingredients:["1 Sugar Cube","2 Dashes Angostura Bitters","0.5oz Cognac","Top Champagne","Garnish: Lemon Twist and Cherry"]},
+  {id:"c06",name:"Cosmopolitan",cat:"Contemporary Classics",ingredients:["1.5oz Citrus Vodka","0.75oz Cointreau","0.5oz Lime Juice","0.5oz Cranberry Juice"]},
+  {id:"c07",name:"Cuba Libre",cat:"Contemporary Classics",ingredients:["2oz White Rum","4oz Cola","0.5oz Lime Juice","Garnish: Lime Wedge"]},
+  {id:"c08",name:"French 75",cat:"Contemporary Classics",ingredients:["1.5oz Gin","0.5oz Lemon Juice","0.5oz Simple Syrup","Top Champagne"]},
+  {id:"c09",name:"Godfather",cat:"Contemporary Classics",ingredients:["1.5oz Scotch","0.75oz Amaretto"]},
+  {id:"c10",name:"Harvey Wallbanger",cat:"Contemporary Classics",ingredients:["2oz Vodka","4oz Orange Juice","0.5oz Galliano"]},
+  {id:"c11",name:"Hemingway Daiquiri",cat:"Contemporary Classics",ingredients:["2oz White Rum","1oz Grapefruit Juice","0.5oz Maraschino Liqueur","0.5oz Lime Juice"]},
+  {id:"c12",name:"Horses Neck",cat:"Contemporary Classics",ingredients:["2oz Brandy","Top Ginger Ale","2 Dashes Angostura Bitters","Garnish: Long Lemon Peel"]},
+  {id:"c13",name:"Kir",cat:"Contemporary Classics",ingredients:["0.5oz Creme de Cassis","Top Dry White Wine"]},
+  {id:"c14",name:"Kir Royale",cat:"Contemporary Classics",ingredients:["0.5oz Creme de Cassis","Top Champagne"]},
+  {id:"c15",name:"Long Island Iced Tea",cat:"Contemporary Classics",ingredients:["0.5oz Vodka","0.5oz White Rum","0.5oz Tequila","0.5oz Gin","0.5oz Triple Sec","1oz Lemon Juice","0.5oz Simple Syrup","Top Cola"]},
+  {id:"c16",name:"Mai Tai",cat:"Contemporary Classics",ingredients:["2oz Aged Rum","1oz Lime Juice","0.5oz Orgeat","0.5oz Orange Curacao","Garnish: Lime and Mint"]},
+  {id:"c17",name:"Mimosa",cat:"Contemporary Classics",ingredients:["2oz Orange Juice","4oz Champagne"]},
+  {id:"c18",name:"Mint Julep",cat:"Contemporary Classics",ingredients:["2.5oz Bourbon","0.5oz Simple Syrup","8 Fresh Mint Leaves","Garnish: Mint Sprig"]},
+  {id:"c19",name:"Mojito",cat:"Contemporary Classics",ingredients:["2oz White Rum","0.75oz Lime Juice","0.75oz Simple Syrup","6 Mint Leaves","Top Club Soda","Garnish: Mint and Lime"]},
+  {id:"c20",name:"Moscow Mule",cat:"Contemporary Classics",ingredients:["2oz Vodka","0.5oz Lime Juice","Top Ginger Beer","Garnish: Lime Wedge and Mint"]},
+  {id:"c21",name:"Penicillin",cat:"Contemporary Classics",ingredients:["2oz Blended Scotch","0.75oz Lemon Juice","0.75oz Honey-Ginger Syrup","0.25oz Islay Scotch Float"]},
+  {id:"c22",name:"Pina Colada",cat:"Contemporary Classics",ingredients:["2oz White Rum","1.5oz Coconut Cream","1.5oz Pineapple Juice","Garnish: Pineapple and Cherry"]},
+  {id:"c23",name:"Sex on the Beach",cat:"Contemporary Classics",ingredients:["1.5oz Vodka","0.5oz Peach Schnapps","2oz Orange Juice","2oz Cranberry Juice"]},
+  {id:"c24",name:"Singapore Sling",cat:"Contemporary Classics",ingredients:["1.5oz Gin","0.75oz Cherry Heering","0.25oz Cointreau","0.25oz Benedictine","4oz Pineapple Juice","0.5oz Lime Juice","1 Dash Grenadine","1 Dash Angostura Bitters"]},
+  {id:"c25",name:"Aperol Spritz",cat:"Contemporary Classics",ingredients:["3oz Prosecco","2oz Aperol","Splash Club Soda","Garnish: Orange Slice"]},
+  {id:"c26",name:"Tequila Sunrise",cat:"Contemporary Classics",ingredients:["2oz Tequila","4oz Orange Juice","0.5oz Grenadine sink","Garnish: Orange and Cherry"]},
+  {id:"c27",name:"Tommys Margarita",cat:"Contemporary Classics",ingredients:["2oz 100% Agave Tequila","1oz Lime Juice","0.5oz Agave Nectar"]},
+  {id:"c28",name:"Vesper",cat:"Contemporary Classics",ingredients:["3oz Gin","1oz Vodka","0.5oz Lillet Blanc","Garnish: Lemon Twist"]},
+  {id:"c29",name:"White Russian",cat:"Contemporary Classics",ingredients:["2oz Vodka","1oz Coffee Liqueur","1oz Heavy Cream"]},
+  {id:"c30",name:"Zombie",cat:"Contemporary Classics",ingredients:["1.5oz White Rum","1.5oz Golden Rum","1oz Demerara Rum","0.75oz Lime Juice","0.5oz Falernum","1oz Grapefruit Juice","1 Dash Grenadine","1 Dash Angostura Bitters"]},
+  {id:"n01",name:"Amaretto Sour",cat:"New Era Drinks",ingredients:["2oz Amaretto","1oz Lemon Juice","0.5oz Simple Syrup","Egg White optional"]},
+  {id:"n02",name:"Bees Knees",cat:"New Era Drinks",ingredients:["2oz Gin","0.75oz Lemon Juice","0.75oz Honey Syrup"]},
+  {id:"n03",name:"Corpse Reviver No 2",cat:"New Era Drinks",ingredients:["0.75oz Gin","0.75oz Cointreau","0.75oz Lillet Blanc","0.75oz Lemon Juice","1 Dash Absinthe"]},
+  {id:"n04",name:"Dark and Stormy",cat:"New Era Drinks",ingredients:["2oz Dark Rum","Top Ginger Beer","0.5oz Lime Juice","Garnish: Lime Wedge"]},
+  {id:"n05",name:"Espresso Martini",cat:"New Era Drinks",ingredients:["2oz Vodka","1oz Espresso","0.75oz Coffee Liqueur","0.5oz Simple Syrup"]},
+  {id:"n06",name:"Gold Rush",cat:"New Era Drinks",ingredients:["2oz Bourbon","0.75oz Lemon Juice","0.75oz Honey Syrup"]},
+  {id:"n07",name:"Gimlet",cat:"New Era Drinks",ingredients:["2oz Gin","0.75oz Lime Juice","0.5oz Simple Syrup"]},
+  {id:"n08",name:"Jungle Bird",cat:"New Era Drinks",ingredients:["1.5oz Dark Rum","1.5oz Pineapple Juice","0.75oz Campari","0.5oz Lime Juice","0.5oz Simple Syrup"]},
+  {id:"n09",name:"Lemon Drop Martini",cat:"New Era Drinks",ingredients:["2oz Vodka","0.75oz Triple Sec","0.75oz Lemon Juice","0.5oz Simple Syrup","Sugar Rim"]},
+  {id:"n10",name:"Margarita",cat:"New Era Drinks",ingredients:["2oz Tequila","1oz Lime Juice","0.5oz Cointreau","Salt Rim"]},
+  {id:"n11",name:"Naked and Famous",cat:"New Era Drinks",ingredients:["0.75oz Mezcal","0.75oz Aperol","0.75oz Yellow Chartreuse","0.75oz Lime Juice"]},
+  {id:"n12",name:"New York Sour",cat:"New Era Drinks",ingredients:["2oz Bourbon","1oz Lemon Juice","0.5oz Simple Syrup","Egg White","0.5oz Red Wine Float"]},
+  {id:"n13",name:"Paloma",cat:"New Era Drinks",ingredients:["2oz Tequila","2oz Grapefruit Juice","0.5oz Lime Juice","Pinch Salt","Top Grapefruit Soda"]},
+  {id:"n14",name:"Paper Plane",cat:"New Era Drinks",ingredients:["0.75oz Bourbon","0.75oz Aperol","0.75oz Amaro Nonino","0.75oz Lemon Juice"]},
+  {id:"n15",name:"Pisco Sour",cat:"New Era Drinks",ingredients:["2oz Pisco","1oz Lime Juice","0.75oz Simple Syrup","1 Egg White","2 Dashes Angostura Bitters"]},
+  {id:"n16",name:"Porn Star Martini",cat:"New Era Drinks",ingredients:["2oz Vanilla Vodka","1oz Passoa","0.5oz Passion Fruit Puree","0.5oz Lime Juice","Side: Shot of Champagne"]},
+  {id:"n17",name:"Spicy Margarita",cat:"New Era Drinks",ingredients:["2oz Tequila","1oz Lime Juice","0.5oz Cointreau","Muddled Jalapeno","Salt Rim"]},
+  {id:"n18",name:"Tom Collins",cat:"New Era Drinks",ingredients:["2oz Gin","1oz Lemon Juice","0.5oz Simple Syrup","Top Club Soda","Garnish: Cherry and Orange"]},
+  {id:"n19",name:"Vieux Carre",cat:"New Era Drinks",ingredients:["1oz Rye Whiskey","1oz Cognac","1oz Sweet Vermouth","0.25oz Benedictine","2 Dashes Peychauds Bitters","2 Dashes Angostura Bitters"]},
+  {id:"n20",name:"Vodka Martini",cat:"New Era Drinks",ingredients:["2.5oz Vodka","0.5oz Dry Vermouth","Garnish: Olive or Lemon Twist"]},
+  {id:"n21",name:"Lions Tail",cat:"New Era Drinks",ingredients:["2oz Bourbon","0.5oz Allspice Dram","0.5oz Lime Juice","0.25oz Simple Syrup","2 Dashes Angostura Bitters"]},
+  {id:"n22",name:"Oaxacan Old Fashioned",cat:"New Era Drinks",ingredients:["1.5oz Reposado Tequila","0.5oz Mezcal","1 Barspoon Agave Nectar","2 Dashes Angostura Bitters","Garnish: Flamed Orange Peel"]},
+  {id:"n23",name:"Painkiller",cat:"New Era Drinks",ingredients:["2oz Pussers Rum","4oz Pineapple Juice","1oz Orange Juice","1oz Cream of Coconut","Garnish: Grated Nutmeg"]},
+  {id:"n24",name:"Rob Roy",cat:"New Era Drinks",ingredients:["2oz Scotch","1oz Sweet Vermouth","2 Dashes Angostura Bitters","Garnish: Cherry"]},
+  {id:"n25",name:"Hugo Spritz",cat:"New Era Drinks",ingredients:["1.5oz St-Germain","3oz Prosecco","Splash Soda Water","Garnish: Mint and Lime"]},
+  {id:"n26",name:"Southside",cat:"New Era Drinks",ingredients:["2oz Gin","1oz Lime Juice","0.75oz Simple Syrup","8 Fresh Mint Leaves"]},
+  {id:"n27",name:"Garibaldi",cat:"New Era Drinks",ingredients:["2oz Campari","4oz Fresh Orange Juice","Garnish: Orange Slice"]},
+  {id:"n28",name:"Mezcal Negroni",cat:"New Era Drinks",ingredients:["1oz Mezcal","1oz Sweet Vermouth","1oz Campari","Garnish: Orange Peel"]},
+  {id:"n29",name:"Vodka Gimlet",cat:"New Era Drinks",ingredients:["2oz Vodka","0.75oz Lime Juice","0.5oz Simple Syrup"]},
+  {id:"n30",name:"Clover Club Modern",cat:"New Era Drinks",ingredients:["2oz Gin","0.75oz Lemon Juice","0.5oz Raspberry Syrup","1 Egg White"]},
+];
+
+const C={gold:"#d4a553",goldDim:"#7a5a20",goldBright:"#f0c070",surface:"rgba(16,8,2,0.97)",border:"#251505",borderLt:"#3a2008",text:"#e8d5a3",textDim:"#8a6a30",textFaint:"#3a2010",green:"#5db85d",greenBg:"rgba(25,80,25,0.35)",greenBd:"#3a7a3a",red:"#c85555",redBg:"rgba(90,20,20,0.35)",redBd:"#884040",blue:"#6090c0"};
+const BG="radial-gradient(ellipse at 35% 20%, #1c0d02 0%, #080401 100%)";
+const F="Georgia,serif";
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const uid=()=>Math.random().toString(36).slice(2,9);
+
+async function searchDB(q){
+  try{
+    const r=await fetch("https://www.thecocktaildb.com/api/json/v1/1/search.php?s="+encodeURIComponent(q));
+    const d=await r.json();
+    if(!d.drinks)return[];
+    return d.drinks.slice(0,20).map(drink=>{
+      const ings=[];
+      for(let i=1;i<=15;i++){const ing=drink["strIngredient"+i],meas=drink["strMeasure"+i];if(ing&&ing.trim())ings.push(meas?meas.trim()+" "+ing.trim():ing.trim());}
+      return{id:"api_"+drink.idDrink,name:drink.strDrink,cat:"Searched",ingredients:ings,custom:true};
+    });
+  }catch{return[];}
+}
+
+const gradeIng=(ing,txt)=>{
+  const kw=ing.toLowerCase().replace(/\d+(\.\d+)?(\s*oz|\s*ml)?/g,"").replace(/\b(fill|splash|top|garnish|optional|with|of|and|dash|dashes|barspoon|pinch|muddled|fresh|squeeze)\b/g," ").replace(/[():.,\/-]/g," ").trim().split(/\s+/).filter(w=>w.length>=3);
+  return kw.length>0&&kw.some(k=>txt.toLowerCase().includes(k));
+};
+
+function Btn({children,onClick,v="primary",small,full,disabled}){
+  const[h,setH]=useState(false);
+  const styles={primary:{bg:h?"linear-gradient(135deg,#d4a553,#f0c070)":"linear-gradient(135deg,#7a5010,#d4a553)",color:"#080401",bd:"none"},secondary:{bg:h?"rgba(26,13,3,0.97)":"rgba(16,8,2,0.97)",color:C.gold,bd:"1px solid "+C.borderLt},danger:{bg:h?C.redBg:"transparent",color:C.red,bd:"1px solid "+(h?C.redBd:C.border)},ghost:{bg:"transparent",color:C.textDim,bd:"none"}};
+  const s=styles[v]||styles.primary;
+  return React.createElement("button",{onClick,disabled,onMouseEnter:()=>setH(true),onMouseLeave:()=>setH(false),style:{background:s.bg,color:s.color,border:s.bd,padding:small?"7px 16px":"11px 24px",fontSize:small?12:14,fontWeight:"bold",letterSpacing:1.5,textTransform:"uppercase",cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.4:1,borderRadius:6,fontFamily:F,transition:"all 0.15s",width:full?"100%":undefined,boxShadow:h&&!disabled?"0 2px 18px rgba(212,165,83,0.3)":"none",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6}},children);
+}
+
+function PBar({val}){return <div style={{height:3,background:C.border}}><div style={{height:"100%",background:"linear-gradient(90deg,#6a4a08,#d4a553)",width:(val*100)+"%",transition:"width 0.4s ease"}}/></div>;}
+
+function TopBar({title,onBack,right}){
+  return <div style={{position:"sticky",top:0,background:"rgba(8,4,1,0.97)",backdropFilter:"blur(8px)",borderBottom:"1px solid "+C.border,padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:20}}>
+    <div style={{display:"flex",alignItems:"center",gap:10}}>
+      {onBack&&<button onClick={onBack} style={{background:"none",border:"none",color:C.gold,fontSize:22,cursor:"pointer"}}>←</button>}
+      <h2 style={{fontSize:14,color:C.gold,letterSpacing:2,textTransform:"uppercase",margin:0}}>{title}</h2>
+    </div>
+    {right}
+  </div>;
+}
+
+function Badge({children,color}){color=color||C.gold;return <span style={{padding:"2px 9px",borderRadius:12,fontSize:11,fontWeight:"bold",letterSpacing:1,textTransform:"uppercase",background:color+"20",color,border:"1px solid "+color+"44"}}>{children}</span>;}
+
+function Modal({title,onClose,children}){
+  return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,padding:20}}>
+    <div style={{background:"#0e0701",border:"1px solid "+C.borderLt,borderRadius:14,padding:24,maxWidth:500,width:"100%",maxHeight:"88vh",overflowY:"auto"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+        <h3 style={{color:C.gold,fontSize:14,letterSpacing:2,textTransform:"uppercase",margin:0}}>{title}</h3>
+        <button onClick={onClose} style={{background:"none",border:"none",color:C.textDim,fontSize:24,cursor:"pointer"}}>x</button>
+      </div>
+      {children}
+    </div>
+  </div>;
+}
+
+function HomeScreen({tests,onNew,onPlay,onDelete}){
+  const mc=m=>m==="flashcard"?C.blue:m==="written"?C.green:C.gold;
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text,paddingBottom:60}}>
+    <div style={{textAlign:"center",padding:"48px 20px 32px"}}>
+      <div style={{fontSize:56,marginBottom:8,filter:"drop-shadow(0 0 28px rgba(212,165,83,0.5))"}}>🍸</div>
+      <h1 style={{fontSize:34,color:C.gold,letterSpacing:5,textTransform:"uppercase",margin:"0 0 4px"}}>Bar School</h1>
+      <p style={{fontSize:11,color:C.goldDim,letterSpacing:5,textTransform:"uppercase",margin:0}}>Bartender Study App</p>
+      <p style={{fontSize:12,color:C.textFaint,marginTop:8}}>102 IBA Official Cocktails + 600+ searchable via TheCocktailDB</p>
+    </div>
+    <div style={{maxWidth:580,margin:"0 auto",padding:"0 18px"}}>
+      <Btn onClick={onNew} full>+ Create New Test</Btn>
+      {tests.length>0&&<div style={{marginTop:32}}>
+        <p style={{fontSize:11,color:C.goldDim,letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Saved Tests</p>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {tests.map(t=><div key={t.id} style={{background:C.surface,border:"1px solid "+C.border,borderRadius:12,padding:"15px 17px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:17,color:C.text,marginBottom:6}}>{t.name}</div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  <Badge>{t.drinkIds.length} drinks</Badge>
+                  <Badge color={mc(t.mode)}>{t.mode.replace("-"," ")}</Badge>
+                </div>
+              </div>
+              <button onClick={()=>onDelete(t.id)} style={{background:"none",border:"none",color:C.textFaint,fontSize:20,cursor:"pointer",marginLeft:8}}>x</button>
+            </div>
+            <Btn onClick={()=>onPlay(t)} full small>Start Test</Btn>
+          </div>)}
+        </div>
+      </div>}
+      {tests.length===0&&<div style={{textAlign:"center",padding:"52px 0",color:C.textFaint}}>
+        <div style={{fontSize:42,marginBottom:14}}>📋</div>
+        <p style={{fontSize:14}}>No saved tests yet.</p>
+        <p style={{fontSize:12,marginTop:4}}>Hit Create to build your first one.</p>
+      </div>}
+    </div>
+  </div>;
+}
+
+function DrinkRow({drink,on,onToggle}){
+  return <div onClick={()=>onToggle(drink.id)} style={{background:on?"rgba(212,165,83,0.08)":C.surface,border:"1px solid "+(on?C.goldDim:C.border),borderRadius:9,padding:"11px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:12,transition:"all 0.15s",marginBottom:6}}>
+    <div style={{width:18,height:18,borderRadius:4,flexShrink:0,background:on?C.gold:"transparent",border:"2px solid "+(on?C.gold:C.borderLt),display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#080401",fontWeight:"bold"}}>{on?"✓":""}</div>
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{fontSize:14,color:on?C.gold:C.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{drink.name}</div>
+      <div style={{fontSize:11,color:C.textDim}}>{drink.ingredients.length} ingredients{drink.cat?" · "+drink.cat:""}</div>
+    </div>
+    {drink.custom&&<Badge color={C.blue}>custom</Badge>}
+  </div>;
+}
+
+function LibraryScreen({allDrinks,selected,onToggle,onAddCustom,onBuild,onBack}){
+  const[tab,setTab]=useState("library");
+  const[search,setSearch]=useState("");
+  const[apiQ,setApiQ]=useState("");
+  const[apiRes,setApiRes]=useState([]);
+  const[loading,setLoading]=useState(false);
+  const[searched,setSearched]=useState(false);
+  const[showAdd,setShowAdd]=useState(false);
+  const[newName,setNewName]=useState("");
+  const[newIngs,setNewIngs]=useState("");
+  const[expandCat,setExpandCat]=useState("The Unforgettables");
+
+  const cats=[...new Set(IBA.map(d=>d.cat))];
+  const custom=allDrinks.filter(d=>d.custom);
+  const filtered=IBA.filter(d=>d.name.toLowerCase().includes(search.toLowerCase())||d.cat.toLowerCase().includes(search.toLowerCase()));
+  const doSearch=async()=>{if(!apiQ.trim())return;setLoading(true);setSearched(true);const r=await searchDB(apiQ.trim());setApiRes(r);setLoading(false);};
+  const addFromApi=drink=>{if(!allDrinks.find(d=>d.id===drink.id))onAddCustom(drink);if(!selected.includes(drink.id))onToggle(drink.id);};
+  const handleAdd=()=>{if(!newName.trim()||!newIngs.trim())return;onAddCustom({id:uid(),name:newName.trim(),ingredients:newIngs.split("\n").map(l=>l.trim()).filter(Boolean),custom:true,cat:"Custom"});setNewName("");setNewIngs("");setShowAdd(false);};
+  const allSel=IBA.every(d=>selected.includes(d.id));
+
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text,paddingBottom:90}}>
+    <TopBar title="Drink Library" onBack={onBack} right={<Btn small onClick={()=>setShowAdd(true)}>+ Custom</Btn>}/>
+    <div style={{display:"flex",borderBottom:"1px solid "+C.border,background:"rgba(8,4,1,0.95)"}}>
+      {[["library","IBA Library"],["search","Search 600+"]].map(([id,label])=>(
+        <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"13px 0",background:"none",border:"none",borderBottom:"2px solid "+(tab===id?C.gold:"transparent"),color:tab===id?C.gold:C.textDim,fontSize:13,letterSpacing:1,cursor:"pointer",fontFamily:F,transition:"all 0.15s"}}>{label}</button>
+      ))}
+    </div>
+    <div style={{maxWidth:580,margin:"0 auto",padding:"14px 18px"}}>
+      {tab==="library"&&<>
+        <div style={{marginBottom:12}}>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Filter drinks..." style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"10px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        <div style={{display:"flex",gap:10,marginBottom:14,alignItems:"center"}}>
+          <Btn small v="secondary" onClick={()=>{if(allSel)IBA.forEach(d=>{if(selected.includes(d.id))onToggle(d.id);});else IBA.forEach(d=>{if(!selected.includes(d.id))onToggle(d.id);});}}>{allSel?"Clear All":"Select All"}</Btn>
+          <span style={{color:C.textDim,fontSize:12}}>{selected.length} selected</span>
+        </div>
+        {custom.length>0&&<div style={{marginBottom:16}}>
+          <p style={{fontSize:11,color:C.blue,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>My Custom Drinks</p>
+          {custom.map(d=><DrinkRow key={d.id} drink={d} on={selected.includes(d.id)} onToggle={onToggle}/>)}
+        </div>}
+        {(search?[{cat:"Results",drinks:filtered}]:cats.map(cat=>({cat,drinks:IBA.filter(d=>d.cat===cat)}))).map(({cat,drinks})=>(
+          <div key={cat} style={{marginBottom:14}}>
+            <button onClick={()=>setExpandCat(expandCat===cat?null:cat)} style={{width:"100%",background:"none",border:"none",padding:"8px 0",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}}>
+              <span style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase"}}>{cat} ({drinks.length})</span>
+              <span style={{color:C.goldDim,fontSize:14}}>{expandCat===cat?"▲":"▼"}</span>
+            </button>
+            {(expandCat===cat||!!search)&&drinks.map(d=><DrinkRow key={d.id} drink={d} on={selected.includes(d.id)} onToggle={onToggle}/>)}
+          </div>
+        ))}
+      </>}
+      {tab==="search"&&<>
+        <p style={{fontSize:12,color:C.textDim,marginBottom:12,lineHeight:1.6}}>Search TheCocktailDB — 600+ cocktails. Tap Add to drop into your library.</p>
+        <div style={{display:"flex",gap:8,marginBottom:16}}>
+          <input value={apiQ} onChange={e=>setApiQ(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder="e.g. Negroni, Mojito, Sour..." style={{flex:1,background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"10px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none"}}/>
+          <Btn onClick={doSearch} disabled={!apiQ.trim()}>Search</Btn>
+        </div>
+        {loading&&<div style={{textAlign:"center",color:C.goldDim,padding:"32px 0",fontSize:13}}>Searching...</div>}
+        {!loading&&searched&&apiRes.length===0&&<div style={{textAlign:"center",color:C.textFaint,padding:"32px 0"}}>
+          <p>No results for "{apiQ}"</p>
+          <p style={{fontSize:12,marginTop:6}}>Try a different name or add manually using + Custom.</p>
+        </div>}
+        {!loading&&apiRes.map(drink=>{
+          const inSel=selected.includes(drink.id);
+          return <div key={drink.id} style={{background:inSel?"rgba(212,165,83,0.08)":C.surface,border:"1px solid "+(inSel?C.goldDim:C.border),borderRadius:10,padding:"13px 15px",marginBottom:8}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:15,color:inSel?C.gold:C.text,marginBottom:4}}>{drink.name}</div>
+                <div style={{fontSize:11,color:C.textDim}}>{drink.ingredients.slice(0,3).join(" · ")}{drink.ingredients.length>3?" +"+(drink.ingredients.length-3)+" more":""}</div>
+              </div>
+              <Btn small v={inSel?"secondary":"primary"} onClick={()=>addFromApi(drink)}>{inSel?"Added":"+ Add"}</Btn>
+            </div>
+          </div>;
+        })}
+      </>}
+    </div>
+    {selected.length>0&&<div style={{position:"fixed",bottom:0,left:0,right:0,background:"rgba(8,4,1,0.97)",borderTop:"1px solid "+C.border,padding:"13px 20px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <span style={{color:C.gold,fontSize:13}}><strong>{selected.length}</strong> <span style={{color:C.goldDim}}>selected</span></span>
+      <Btn onClick={onBuild}>Build Test →</Btn>
+    </div>}
+    {showAdd&&<Modal title="Add Custom Drink" onClose={()=>setShowAdd(false)}>
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        <div>
+          <label style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:6}}>Drink Name</label>
+          <input value={newName} onChange={e=>setNewName(e.target.value)} placeholder="e.g. Dark and Stormy" style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"10px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        <div>
+          <label style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:6}}>Ingredients (one per line)</label>
+          <textarea value={newIngs} onChange={e=>setNewIngs(e.target.value)} placeholder={"2oz Dark Rum\n0.5oz Lime Juice\nTop Ginger Beer"} rows={5} style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"10px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none",resize:"vertical",boxSizing:"border-box"}}/>
+        </div>
+        <Btn onClick={handleAdd} full disabled={!newName.trim()||!newIngs.trim()}>Add to Library</Btn>
+      </div>
+    </Modal>}
+  </div>;
+}
+
+function BuildScreen({sel,allDrinks,onRemove,onSave,onStart,onBack}){
+  const[name,setName]=useState("");
+  const[mode,setMode]=useState("multiple-choice");
+  const drinks=allDrinks.filter(d=>sel.includes(d.id));
+  const MODES=[{id:"flashcard",label:"Flashcard",icon:"🃏",desc:"Flip to reveal the recipe"},{id:"multiple-choice",label:"Multiple Choice",icon:"☑",desc:"Pick from 4 options"},{id:"written",label:"Written",icon:"✍",desc:"Type ingredients from memory"}];
+  const mc=m=>m==="flashcard"?C.blue:m==="written"?C.green:C.gold;
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text,paddingBottom:80}}>
+    <TopBar title="Build Test" onBack={onBack}/>
+    <div style={{maxWidth:560,margin:"0 auto",padding:"22px 18px"}}>
+      <div style={{marginBottom:22}}>
+        <label style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:7}}>Test Name</label>
+        <input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Gin Drinks, Speed Round, All IBA..." style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"10px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none",boxSizing:"border-box"}}/>
+      </div>
+      <div style={{marginBottom:22}}>
+        <label style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:9}}>Quiz Mode</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {MODES.map(m=><div key={m.id} onClick={()=>setMode(m.id)} style={{background:mode===m.id?"rgba(212,165,83,0.08)":C.surface,border:"1px solid "+(mode===m.id?mc(m.id):C.border),borderRadius:10,padding:"12px 15px",cursor:"pointer",display:"flex",alignItems:"center",gap:12,transition:"all 0.15s"}}>
+            <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid "+(mode===m.id?mc(m.id):C.borderLt),background:mode===m.id?mc(m.id):"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              {mode===m.id&&<div style={{width:7,height:7,borderRadius:"50%",background:"#080401"}}/>}
+            </div>
+            <div>
+              <div style={{color:mode===m.id?mc(m.id):C.text,fontSize:14}}>{m.icon} {m.label}</div>
+              <div style={{color:C.textDim,fontSize:11}}>{m.desc}</div>
+            </div>
+          </div>)}
+        </div>
+      </div>
+      <div style={{marginBottom:26}}>
+        <label style={{fontSize:11,color:C.goldDim,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:9}}>Selected Drinks ({drinks.length})</label>
+        {drinks.length===0?<p style={{color:C.textFaint,fontSize:13}}>No drinks selected.</p>:<div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:10,overflow:"hidden",maxHeight:220,overflowY:"auto"}}>
+          {drinks.map((d,i)=><div key={d.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 14px",borderBottom:i<drinks.length-1?"1px solid "+C.border:"none"}}>
+            <span style={{fontSize:13,color:C.text}}>{d.name}</span>
+            <button onClick={()=>onRemove(d.id)} style={{background:"none",border:"none",color:C.textFaint,fontSize:18,cursor:"pointer"}}>x</button>
+          </div>)}
+        </div>}
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        <Btn onClick={()=>onStart({name:name.trim()||"Quick Test",mode,drinks})} full disabled={drinks.length===0}>▶ Start Now</Btn>
+        <Btn v="secondary" onClick={()=>{if(!name.trim()||drinks.length===0)return;onSave({id:uid(),name:name.trim(),mode,drinkIds:drinks.map(d=>d.id),createdAt:Date.now()});}} full disabled={!name.trim()||drinks.length===0}>Save Test</Btn>
+      </div>
+    </div>
+  </div>;
+}
+
+function FlashcardQuiz({drinks,onDone}){
+  const[idx,setIdx]=useState(0);
+  const[flipped,setFlipped]=useState(false);
+  const known=useRef(0);
+  const drink=drinks[idx];
+  const mark=k=>{if(k)known.current++;if(idx+1>=drinks.length)onDone({mode:"flashcard",known:known.current,total:drinks.length});else{setIdx(i=>i+1);setFlipped(false);}};
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Flashcards" right={<span style={{color:C.textDim,fontSize:12}}>{idx+1} / {drinks.length}</span>}/>
+    <PBar val={idx/drinks.length}/>
+    <div style={{maxWidth:540,margin:"0 auto",padding:"28px 18px"}}>
+      <div onClick={()=>setFlipped(f=>!f)} style={{background:C.surface,border:"1px solid "+(flipped?C.goldDim:C.border),borderRadius:18,padding:"44px 28px",minHeight:260,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",marginBottom:22,transition:"all 0.25s",boxShadow:flipped?"0 0 40px rgba(212,165,83,0.1)":"none"}}>
+        {!flipped?<>
+          <div style={{fontSize:11,color:C.goldDim,letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>Drink Name</div>
+          <div style={{fontSize:28,color:C.gold,fontWeight:"bold"}}>{drink.name}</div>
+          <div style={{fontSize:11,color:C.textFaint,marginTop:8}}>{drink.cat}</div>
+          <div style={{fontSize:11,color:C.textFaint,marginTop:22}}>Tap to reveal recipe</div>
+        </>:<>
+          <div style={{fontSize:11,color:C.goldDim,letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>{drink.name}</div>
+          {drink.ingredients.map((ing,i)=><div key={i} style={{fontSize:15,color:C.text,padding:"6px 0",borderBottom:i<drink.ingredients.length-1?"1px solid "+C.border:"none",width:"100%",textAlign:"left"}}><span style={{color:C.textFaint,marginRight:8}}>▸</span>{ing}</div>)}
+        </>}
+      </div>
+      {flipped&&<div style={{display:"flex",gap:12}}>
+        <Btn v="danger" full onClick={()=>mark(false)}>Still Learning</Btn>
+        <Btn full onClick={()=>mark(true)}>Got It!</Btn>
+      </div>}
+    </div>
+  </div>;
+}
+
+function MCQuiz({drinks,allDrinks,onDone}){
+  const[qs]=useState(()=>{
+    const out=[];
+    shuffle([...drinks]).forEach((drink,i)=>{
+      if(i%2===0){
+        const w=shuffle(allDrinks.filter(d=>d.id!==drink.id)).slice(0,3);
+        out.push({type:"name",drink,prompt:"What cocktail has these ingredients?",choices:shuffle([drink.name,...w.map(d=>d.name)]),answer:drink.name});
+      }else{
+        const ci=drink.ingredients[Math.floor(Math.random()*drink.ingredients.length)];
+        const pool=shuffle([...new Set(allDrinks.filter(d=>d.id!==drink.id).flatMap(d=>d.ingredients).filter(x=>!drink.ingredients.includes(x)))]).slice(0,3);
+        if(pool.length<3){const w2=shuffle(allDrinks.filter(d=>d.id!==drink.id)).slice(0,3);out.push({type:"name",drink,prompt:"What cocktail has these ingredients?",choices:shuffle([drink.name,...w2.map(d=>d.name)]),answer:drink.name});}
+        else out.push({type:"ingredient",drink,prompt:"Which ingredient belongs in a "+drink.name+"?",choices:shuffle([ci,...pool]),answer:ci});
+      }
+    });
+    return out;
+  });
+  const[cur,setCur]=useState(0);
+  const[sel,setSel]=useState(null);
+  const[score,setScore]=useState(0);
+  const[wrong,setWrong]=useState([]);
+  const q=qs[cur];
+  const pick=c=>{if(sel)return;setSel(c);if(c===q.answer)setScore(s=>s+1);else setWrong(w=>[...w,q]);};
+  const next=()=>{if(cur+1>=qs.length)onDone({mode:"multiple-choice",score,total:qs.length,wrong});else{setCur(c=>c+1);setSel(null);}};
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Multiple Choice" right={<span style={{color:C.gold,fontSize:13,fontWeight:"bold"}}>Score: {score}</span>}/>
+    <PBar val={cur/qs.length}/>
+    <div style={{maxWidth:560,margin:"0 auto",padding:"20px 18px"}}>
+      <div style={{fontSize:11,color:C.textDim,marginBottom:10,letterSpacing:1}}>Question {cur+1} of {qs.length}</div>
+      <h2 style={{fontSize:17,color:C.text,marginBottom:16,lineHeight:1.4}}>{q.prompt}</h2>
+      {q.type==="name"&&<div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:10,padding:"13px 15px",marginBottom:18}}>
+        {q.drink.ingredients.map((ing,i)=><div key={i} style={{fontSize:13,color:C.textDim,padding:"5px 0",borderBottom:i<q.drink.ingredients.length-1?"1px solid "+C.border:"none"}}><span style={{color:C.textFaint,marginRight:8}}>▸</span>{ing}</div>)}
+      </div>}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:18}}>
+        {q.choices.map((ch,i)=>{
+          let bg=C.surface,bd="1px solid "+C.border,cl=C.text,glow="none";
+          if(sel){if(ch===q.answer){bg=C.greenBg;bd="1px solid "+C.greenBd;cl=C.green;glow="0 0 10px rgba(50,140,50,0.2)";}else if(ch===sel){bg=C.redBg;bd="1px solid "+C.redBd;cl=C.red;}else{cl=C.textFaint;}}
+          return <button key={i} onClick={()=>pick(ch)} style={{background:bg,border:bd,borderRadius:8,padding:"11px 13px",color:cl,cursor:sel?"default":"pointer",fontFamily:F,fontSize:13,textAlign:"left",lineHeight:1.4,transition:"all 0.15s",boxShadow:glow}}>
+            <span style={{color:C.textFaint,marginRight:6,fontSize:11}}>{String.fromCharCode(65+i)}.</span>{ch}
+          </button>;
+        })}
+      </div>
+      {sel&&<div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{fontSize:13,color:sel===q.answer?C.green:C.red,fontStyle:"italic"}}>{sel===q.answer?"Correct!":"Answer: "+q.answer}</div>
+        <Btn small onClick={next}>{cur+1>=qs.length?"See Results":"Next →"}</Btn>
+      </div>}
+    </div>
+  </div>;
+}
+
+function WrittenQuiz({drinks,onDone}){
+  const[idx,setIdx]=useState(0);
+  const[typed,setTyped]=useState("");
+  const[submitted,setSubmitted]=useState(false);
+  const[graded,setGraded]=useState(null);
+  const running=useRef({correct:0,possible:0});
+  const drink=drinks[idx];
+  const submit=()=>{
+    if(!typed.trim())return;
+    const results=drink.ingredients.map(ing=>({ing,got:gradeIng(ing,typed)}));
+    const correct=results.filter(r=>r.got).length;
+    running.current.correct+=correct;running.current.possible+=drink.ingredients.length;
+    setGraded({results,correct});setSubmitted(true);
+  };
+  const next=()=>{if(idx+1>=drinks.length)onDone({mode:"written",score:running.current.correct,total:running.current.possible});else{setIdx(i=>i+1);setTyped("");setSubmitted(false);setGraded(null);}};
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Written Quiz" right={<span style={{color:C.textDim,fontSize:12}}>{idx+1} / {drinks.length}</span>}/>
+    <PBar val={idx/drinks.length}/>
+    <div style={{maxWidth:540,margin:"0 auto",padding:"28px 18px"}}>
+      <div style={{textAlign:"center",marginBottom:28}}>
+        <p style={{fontSize:11,color:C.goldDim,letterSpacing:3,textTransform:"uppercase",marginBottom:7}}>What goes in a</p>
+        <h2 style={{fontSize:28,color:C.gold}}>{drink.name}</h2>
+      </div>
+      {!submitted?<>
+        <p style={{fontSize:11,color:C.textDim,marginBottom:8}}>Type all ingredients you remember — one per line</p>
+        <textarea value={typed} onChange={e=>setTyped(e.target.value)} placeholder={"2oz Bourbon\n0.75oz Lime Juice\n..."} rows={7} style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"12px 14px",color:C.text,fontFamily:F,fontSize:14,outline:"none",resize:"vertical",marginBottom:14,boxSizing:"border-box"}}/>
+        <Btn onClick={submit} full disabled={!typed.trim()}>Submit Answer</Btn>
+      </>:<>
+        <div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:10,overflow:"hidden",marginBottom:16}}>
+          {graded.results.map((r,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 15px",borderBottom:i<graded.results.length-1?"1px solid "+C.border:"none",background:r.got?C.greenBg:C.redBg}}>
+            <span style={{color:r.got?C.green:C.red,flexShrink:0}}>{r.got?"✓":"✗"}</span>
+            <span style={{fontSize:13,color:r.got?C.green:C.red}}>{r.ing}</span>
+          </div>)}
+        </div>
+        <div style={{textAlign:"center",marginBottom:18,color:C.gold,fontSize:14}}>{graded.correct} / {drink.ingredients.length} ingredients recalled</div>
+        <Btn onClick={next} full>{idx+1>=drinks.length?"See Results":"Next Drink →"}</Btn>
+      </>}
+    </div>
+  </div>;
+}
+
+function ResultsScreen({results,onRetry,onHome}){
+  const{mode,score,total,known,wrong}=results;
+  const num=mode==="flashcard"?known:score;
+  const pct=total>0?Math.round((num/total)*100):0;
+  const g=pct>=90?{e:"🏆",m:"Outstanding!",c:"#ffd700"}:pct>=75?{e:"🍸",m:"Strong Work",c:"#c8c8c8"}:pct>=55?{e:"🥃",m:"Getting There",c:"#cd7f32"}:{e:"📚",m:"Keep Drilling",c:C.red};
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <div style={{maxWidth:500,margin:"0 auto",padding:"52px 18px 20px",textAlign:"center"}}>
+      <div style={{fontSize:54,marginBottom:10}}>{g.e}</div>
+      <h1 style={{fontSize:22,color:C.gold,textTransform:"uppercase",letterSpacing:3,marginBottom:20}}>{mode==="flashcard"?"Study Complete":"Results"}</h1>
+      <div style={{fontSize:64,fontWeight:"bold",color:g.c,lineHeight:1}}>{num}<span style={{fontSize:28,color:C.goldDim}}>/{total}</span></div>
+      <div style={{fontSize:16,color:g.c,margin:"7px 0 3px"}}>{g.m}</div>
+      <div style={{fontSize:13,color:C.goldDim,marginBottom:32}}>{pct}% {mode==="flashcard"?"known":"correct"}</div>
+      {wrong&&wrong.length>0&&<div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:12,padding:"16px 18px",marginBottom:24,textAlign:"left",maxHeight:200,overflowY:"auto"}}>
+        <p style={{color:C.red,fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Review These</p>
+        {wrong.map((q,i)=><div key={i} style={{marginBottom:7,paddingBottom:7,borderBottom:i<wrong.length-1?"1px solid "+C.border:"none"}}>
+          <div style={{fontSize:11,color:C.textDim,marginBottom:2}}>{q.prompt}</div>
+          <div style={{fontSize:13,color:C.green}}>Answer: {q.answer}</div>
+        </div>)}
+      </div>}
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        <Btn onClick={onRetry} full>Try Again</Btn>
+        <Btn v="secondary" onClick={onHome} full>Home</Btn>
+      </div>
+    </div>
+  </div>;
+}
+
+function App(){
+  const[view,setView]=useState("home");
+  const[custom,setCustom]=useState(()=>sget("bs_custom")||[]);
+  const[tests,setTests]=useState(()=>sget("bs_tests")||[]);
+  const[sel,setSel]=useState([]);
+  const[active,setActive]=useState(null);
+  const[results,setResults]=useState(null);
+  const allDrinks=[...IBA,...custom];
+  const saveTests=t=>{setTests(t);sset("bs_tests",t);};
+  const saveCustom=c=>{setCustom(c);sset("bs_custom",c);};
+  const toggle=id=>setSel(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
+  const startQuiz=t=>{setActive(t);setResults(null);setView("quiz");};
+  const launchSaved=saved=>{const drinks=allDrinks.filter(d=>saved.drinkIds.includes(d.id));startQuiz({...saved,drinks});};
+  if(view==="home")return <HomeScreen tests={tests} onNew={()=>{setSel([]);setView("library");}} onPlay={launchSaved} onDelete={id=>saveTests(tests.filter(t=>t.id!==id))}/>;
+  if(view==="library")return <LibraryScreen allDrinks={allDrinks} selected={sel} onToggle={toggle} onAddCustom={d=>saveCustom([...custom,d])} onBuild={()=>setView("build")} onBack={()=>setView("home")}/>;
+  if(view==="build")return <BuildScreen sel={sel} allDrinks={allDrinks} onRemove={id=>setSel(s=>s.filter(x=>x!==id))} onBack={()=>setView("library")} onSave={t=>{saveTests([...tests,t]);setView("home");}} onStart={t=>startQuiz({...t,drinks:allDrinks.filter(d=>sel.includes(d.id))})}/>;
+  if(view==="quiz"&&active){
+    const done=r=>{setResults(r);setView("results");};
+    if(active.mode==="flashcard")return <FlashcardQuiz drinks={active.drinks} onDone={done}/>;
+    if(active.mode==="written")return <WrittenQuiz drinks={active.drinks} onDone={done}/>;
+    return <MCQuiz drinks={active.drinks} allDrinks={allDrinks} onDone={done}/>;
+  }
+  if(view==="results")return <ResultsScreen results={results} onRetry={()=>startQuiz(active)} onHome={()=>setView("home")}/>;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
