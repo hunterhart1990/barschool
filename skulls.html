@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Skulls 💀</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:#111;}
+::-webkit-scrollbar-thumb{background:#333;border-radius:2px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useRef} = React;
+
+// ── THE 26 DRINKS FROM YOUR FRIEND'S RECIPE CARDS ───────────────
+const DRINKS = [
+  {id:"d01", name:"Lion's Tail",        ingredients:["2oz Bourbon","0.5oz Lime Juice","Dash Simple Syrup","0.5oz Allspice Dram"]},
+  {id:"d02", name:"Sazerac",            ingredients:["2oz Rye","0.25oz Demerara","3 Dashes Angostura Bitters","6 Dashes Peychaud's Bitters"]},
+  {id:"d03", name:"Last Word",          ingredients:["0.75oz Bourbon","0.75oz Lime Juice","0.75oz Maraschino Liqueur","0.75oz Green Chartreuse"]},
+  {id:"d04", name:"Paper Plane",        ingredients:["0.75oz Bourbon","0.75oz Amaro Nonino","0.75oz Lemon Juice","0.75oz Aperol"]},
+  {id:"d05", name:"Gimlet",             ingredients:["2oz Gin","0.75oz Lime Juice","0.5oz Simple Syrup"]},
+  {id:"d06", name:"Moscow Mule",        ingredients:["2oz Vodka","0.5oz Lime Juice","Fill with Ginger Beer"]},
+  {id:"d07", name:"Negroni",            ingredients:["1oz Gin","1oz Sweet Vermouth","1oz Campari"]},
+  {id:"d08", name:"Bloody Mary",        ingredients:["2oz Vodka","0.5oz Lime Juice","4oz Bloody Mix"]},
+  {id:"d09", name:"Cosmopolitan",       ingredients:["2oz Vodka","0.5oz Cointreau","0.75oz Lime Juice","0.5oz Cranberry Juice","0.25oz Simple Syrup"]},
+  {id:"d10", name:"Espresso Martini",   ingredients:["2oz Vodka","0.75oz Black Spice Liqueur","0.5oz Simple Syrup","1oz Coffee"]},
+  {id:"d11", name:"Daiquiri",           ingredients:["2oz Clear Rum","0.75oz Lime Juice","0.75oz Simple Syrup"]},
+  {id:"d12", name:"Lemon Drop",         ingredients:["2oz Vodka","0.75oz Lemon Juice","0.5oz Cointreau","0.5oz Simple Syrup"]},
+  {id:"d13", name:"Margarita",          ingredients:["2oz Tequila","0.5oz Cointreau","1oz Lime Juice","0.25oz Agave Syrup"]},
+  {id:"d14", name:"Mojito",             ingredients:["2oz Clear Rum","0.75oz Lime Juice","0.75oz Simple Syrup","Top with Soda","Garnish: Mint and Lime"]},
+  {id:"d15", name:"Aperol Spritz",      ingredients:["1.5oz Aperol","3oz Prosecco","Splash Soda Water"]},
+  {id:"d16", name:"Amaretto Sour",      ingredients:["2oz Amaretto","0.75oz Lemon Juice","0.5oz Simple Syrup","Egg White optional"]},
+  {id:"d17", name:"Old Fashioned",      ingredients:["2oz Bourbon","0.25oz Demerara","2 Dashes Angostura Bitters","1 Dash Orange Bitters"]},
+  {id:"d18", name:"Whiskey Sour",       ingredients:["2oz Bourbon","0.75oz Simple Syrup","0.75oz Lime Juice","Egg optional"]},
+  {id:"d19", name:"Boulevardier",       ingredients:["1oz Rye","1oz Campari","1oz Sweet Vermouth"]},
+  {id:"d20", name:"Bee's Knees",        ingredients:["2oz Gin","0.75oz Lemon Juice","0.75oz Honey"]},
+  {id:"d21", name:"Corpse Reviver No.2",ingredients:["0.75oz Lemon Juice","0.75oz Cointreau","0.75oz Gin","0.75oz Lillet Blanc"]},
+  {id:"d22", name:"Aviation",           ingredients:["2oz Gin","0.75oz Lemon Juice","0.5oz Maraschino Liqueur","0.25oz Simple Syrup","0.25oz Violette Liqueur"]},
+  {id:"d23", name:"French 75",          ingredients:["1.5oz Gin","0.5oz Simple Syrup","0.5oz Lemon Juice","3oz Cava"]},
+  {id:"d24", name:"Hugo Spritz",        ingredients:["1.5oz St. Germain","3oz Cava","Lemon Slice and Mint"]},
+  {id:"d25", name:"Sidecar",            ingredients:["2oz Cognac","0.75oz Lemon Juice","0.75oz Curacao","0.25oz Simple Syrup"]},
+  {id:"d26", name:"Gold Rush",          ingredients:["2oz Bourbon","0.75oz Lemon Juice","0.75oz Honey"]},
+];
+
+// ── THEME ────────────────────────────────────────────────────────
+const C={
+  primary:"#e03030", primaryDim:"#8a1515", primaryBright:"#ff5050",
+  bg:"#0a0a0a", surface:"rgba(18,12,12,0.97)", surfaceHov:"rgba(28,18,18,0.97)",
+  border:"#2a1010", borderLt:"#4a2020",
+  text:"#f0e0e0", textDim:"#907070", textFaint:"#3a2020",
+  green:"#5db85d", greenBg:"rgba(25,80,25,0.35)", greenBd:"#3a7a3a",
+  red:"#c85555", redBg:"rgba(90,20,20,0.35)", redBd:"#884040",
+  skull:"#e03030",
+};
+const BG="radial-gradient(ellipse at 40% 20%, #1a0808 0%, #0a0a0a 100%)";
+const F="'Courier New', Courier, monospace";
+
+// ── UTILS ────────────────────────────────────────────────────────
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+
+// Levenshtein distance for fuzzy matching
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// Extract amount from ingredient string e.g. "2oz" "0.75oz" "1 Dash"
+function extractAmount(str){
+  const m=str.match(/^(\d+(\.\d+)?)\s*(oz|dash|dashes|tsp|tbsp|splash|fill|top|garnish)/i);
+  return m?m[1]:null;
+}
+
+// Check if typed text matches an ingredient with leniency
+// Amount must be correct, ingredient name can be fuzzy matched
+function gradeIngredient(ingredient, typed){
+  const ingLower = ingredient.toLowerCase();
+  const typedLower = typed.toLowerCase();
+
+  // Special cases: garnish/top/fill/splash lines — just check keyword presence
+  if(/^(garnish|top|fill|splash|egg)/i.test(ingredient)){
+    const key = ingLower.replace(/^(garnish:|top with|fill with|splash of)/i,'').trim().split(/\s+/)[0];
+    return typedLower.includes(key.slice(0,4));
+  }
+
+  // Extract amount from ingredient
+  const reqAmount = extractAmount(ingredient);
+
+  // Extract ingredient name (everything after the amount)
+  const ingName = ingredient.replace(/^\d+(\.\d+)?\s*(oz|dash(es)?|tsp|tbsp|barspoon)\s*/i,'').toLowerCase().trim();
+
+  // Check amount match (must be present if specified)
+  let amountOk = true;
+  if(reqAmount){
+    // Look for the number in typed text
+    const nums = typedLower.match(/\d+(\.\d+)?/g)||[];
+    amountOk = nums.some(n => Math.abs(parseFloat(n)-parseFloat(reqAmount)) < 0.05);
+  }
+
+  if(!amountOk) return false;
+
+  // Fuzzy check ingredient name — split into keywords
+  const keywords = ingName.split(/[\s,\/]+/).filter(w=>w.length>=3);
+  if(keywords.length===0) return false;
+
+  // Check if at least half the keywords are present (with some fuzziness)
+  const lines = typedLower.split(/[\n,]+/);
+  let matched = 0;
+  for(const kw of keywords){
+    // Check across all typed lines for fuzzy match
+    const found = lines.some(line=>{
+      const words = line.split(/\s+/);
+      return words.some(w => {
+        if(w.includes(kw.slice(0,4))) return true; // prefix match
+        if(kw.length<=5) return levenshtein(w,kw)<=1;
+        return levenshtein(w,kw)<=2;
+      });
+    });
+    if(found) matched++;
+  }
+  return matched >= Math.ceil(keywords.length * 0.6);
+}
+
+// Grade entire written answer against a drink
+function gradeAnswer(drink, typed){
+  return drink.ingredients.map(ing=>({ing, got:gradeIngredient(ing, typed)}));
+}
+
+// ── ATOMS ─────────────────────────────────────────────────────────
+function Btn({children,onClick,v="primary",small,full,disabled}){
+  const[h,setH]=useState(false);
+  const styles={
+    primary:{bg:h?"linear-gradient(135deg,#e03030,#ff6060)":"linear-gradient(135deg,#6a0a0a,#c02020)",color:"#fff",bd:"none"},
+    secondary:{bg:h?C.surfaceHov:C.surface,color:C.primary,bd:"1px solid "+(h?C.primaryDim:C.borderLt)},
+    danger:{bg:h?C.redBg:"transparent",color:C.red,bd:"1px solid "+(h?C.redBd:C.border)},
+    ghost:{bg:"transparent",color:C.textDim,bd:"none"},
+  };
+  const s=styles[v]||styles.primary;
+  return <button onClick={onClick} disabled={disabled} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+    style={{background:s.bg,color:s.color,border:s.bd,padding:small?"7px 16px":"11px 26px",fontSize:small?12:14,fontWeight:"bold",letterSpacing:2,textTransform:"uppercase",cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.4:1,borderRadius:4,fontFamily:F,transition:"all 0.15s",width:full?"100%":undefined,boxShadow:h&&!disabled?"0 2px 20px rgba(200,30,30,0.4)":"none",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6}}>
+    {children}
+  </button>;
+}
+
+function PBar({val}){
+  return <div style={{height:3,background:C.border}}>
+    <div style={{height:"100%",background:"linear-gradient(90deg,#6a0a0a,#e03030)",width:(val*100)+"%",transition:"width 0.4s ease"}}/>
+  </div>;
+}
+
+function TopBar({title,onBack,right}){
+  return <div style={{position:"sticky",top:0,background:"rgba(10,10,10,0.97)",backdropFilter:"blur(8px)",borderBottom:"1px solid "+C.border,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:20}}>
+    <div style={{display:"flex",alignItems:"center",gap:12}}>
+      {onBack&&<button onClick={onBack} style={{background:"none",border:"none",color:C.primary,fontSize:22,cursor:"pointer",lineHeight:1}}>←</button>}
+      <h2 style={{fontSize:14,color:C.primary,letterSpacing:3,textTransform:"uppercase",margin:0}}>{title}</h2>
+    </div>
+    {right}
+  </div>;
+}
+
+// ── HOME ──────────────────────────────────────────────────────────
+function HomeScreen({onStart}){
+  const[mode,setMode]=useState("multiple-choice");
+  const MODES=[
+    {id:"multiple-choice", label:"Multiple Choice", icon:"💀", desc:"10 options — name the drink or find the ingredient"},
+    {id:"flashcard",       label:"Flashcards",      icon:"🃏", desc:"See the name, flip to reveal the recipe"},
+    {id:"written",         label:"Written",         icon:"✍",  desc:"Type all ingredients from memory"},
+  ];
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text,paddingBottom:60}}>
+    <div style={{textAlign:"center",padding:"52px 20px 36px"}}>
+      <div style={{fontSize:72,marginBottom:4,filter:"drop-shadow(0 0 30px rgba(200,30,30,0.6))"}}>💀</div>
+      <h1 style={{fontSize:38,color:C.primary,letterSpacing:8,textTransform:"uppercase",margin:"0 0 6px"}}>Skulls</h1>
+      <p style={{fontSize:11,color:C.primaryDim,letterSpacing:4,textTransform:"uppercase",margin:0}}>Bartender Quiz</p>
+      <p style={{fontSize:12,color:C.textFaint,marginTop:10}}>26 drinks · Quiz tomorrow · Let's go</p>
+    </div>
+
+    <div style={{maxWidth:520,margin:"0 auto",padding:"0 20px"}}>
+      <p style={{fontSize:11,color:C.textDim,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Choose Your Mode</p>
+      <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:28}}>
+        {MODES.map(m=><div key={m.id} onClick={()=>setMode(m.id)} style={{background:mode===m.id?"rgba(200,30,30,0.1)":C.surface,border:"1px solid "+(mode===m.id?C.primary:C.border),borderRadius:8,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"all 0.15s"}}>
+          <div style={{width:20,height:20,borderRadius:"50%",border:"2px solid "+(mode===m.id?C.primary:C.borderLt),background:mode===m.id?C.primary:"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {mode===m.id&&<div style={{width:8,height:8,borderRadius:"50%",background:"#0a0a0a"}}/>}
+          </div>
+          <div>
+            <div style={{color:mode===m.id?C.primary:C.text,fontSize:15,marginBottom:2}}>{m.icon} {m.label}</div>
+            <div style={{color:C.textDim,fontSize:11}}>{m.desc}</div>
+          </div>
+        </div>)}
+      </div>
+
+      <Btn onClick={()=>onStart(mode)} full>Start Quiz — {DRINKS.length} Drinks</Btn>
+
+      <div style={{marginTop:32,background:C.surface,border:"1px solid "+C.border,borderRadius:8,padding:"16px 18px"}}>
+        <p style={{fontSize:11,color:C.primaryDim,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Drinks on This Quiz</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+          {DRINKS.map(d=><div key={d.id} style={{fontSize:12,color:C.textDim,padding:"3px 0"}}>▸ {d.name}</div>)}
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ── MULTIPLE CHOICE ───────────────────────────────────────────────
+function MCQuiz({onDone}){
+  const NCHOICES=10;
+  const[qs]=useState(()=>{
+    const out=[];
+    shuffle([...DRINKS]).forEach((drink,i)=>{
+      if(i%2===0){
+        // Name the drink from ingredients
+        const wrongs=shuffle(DRINKS.filter(d=>d.id!==drink.id)).slice(0,NCHOICES-1);
+        out.push({type:"name",drink,prompt:"Which cocktail has these ingredients?",choices:shuffle([drink.name,...wrongs.map(d=>d.name)]),answer:drink.name});
+      } else {
+        // Pick the correct ingredient
+        const ci=drink.ingredients[Math.floor(Math.random()*drink.ingredients.length)];
+        const allIngs=[...new Set(DRINKS.filter(d=>d.id!==drink.id).flatMap(d=>d.ingredients).filter(x=>!drink.ingredients.includes(x)))];
+        const pool=shuffle(allIngs).slice(0,NCHOICES-1);
+        if(pool.length<NCHOICES-1){
+          const w2=shuffle(DRINKS.filter(d=>d.id!==drink.id)).slice(0,NCHOICES-1);
+          out.push({type:"name",drink,prompt:"Which cocktail has these ingredients?",choices:shuffle([drink.name,...w2.map(d=>d.name)]),answer:drink.name});
+        } else {
+          out.push({type:"ingredient",drink,prompt:"Which ingredient belongs in a "+drink.name+"?",choices:shuffle([ci,...pool]),answer:ci});
+        }
+      }
+    });
+    return out;
+  });
+  const[cur,setCur]=useState(0);
+  const[sel,setSel]=useState(null);
+  const[score,setScore]=useState(0);
+  const[wrong,setWrong]=useState([]);
+  const q=qs[cur];
+  const pick=c=>{if(sel)return;setSel(c);if(c===q.answer)setScore(s=>s+1);else setWrong(w=>[...w,q]);};
+  const next=()=>{if(cur+1>=qs.length)onDone({mode:"multiple-choice",score,total:qs.length,wrong});else{setCur(c=>c+1);setSel(null);}};
+
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Multiple Choice" right={<span style={{color:C.primary,fontSize:13,fontWeight:"bold"}}>💀 {score}</span>}/>
+    <PBar val={cur/qs.length}/>
+    <div style={{maxWidth:620,margin:"0 auto",padding:"20px 18px"}}>
+      <div style={{fontSize:11,color:C.textDim,marginBottom:10,letterSpacing:2}}>Question {cur+1} of {qs.length}</div>
+      <h2 style={{fontSize:16,color:C.text,marginBottom:16,lineHeight:1.5}}>{q.prompt}</h2>
+      {q.type==="name"&&<div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:8,padding:"13px 16px",marginBottom:18}}>
+        {q.drink.ingredients.map((ing,i)=><div key={i} style={{fontSize:13,color:C.textDim,padding:"5px 0",borderBottom:i<q.drink.ingredients.length-1?"1px solid "+C.border:"none"}}>
+          <span style={{color:C.textFaint,marginRight:8}}>▸</span>{ing}
+        </div>)}
+      </div>}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:18}}>
+        {q.choices.map((ch,i)=>{
+          let bg=C.surface,bd="1px solid "+C.border,cl=C.text,glow="none";
+          if(sel){
+            if(ch===q.answer){bg=C.greenBg;bd="1px solid "+C.greenBd;cl=C.green;glow="0 0 8px rgba(50,140,50,0.25)";}
+            else if(ch===sel){bg=C.redBg;bd="1px solid "+C.redBd;cl=C.red;}
+            else{cl=C.textFaint;}
+          }
+          return <button key={i} onClick={()=>pick(ch)} style={{background:bg,border:bd,borderRadius:6,padding:"10px 12px",color:cl,cursor:sel?"default":"pointer",fontFamily:F,fontSize:12,textAlign:"left",lineHeight:1.4,transition:"all 0.15s",boxShadow:glow}}>
+            <span style={{color:C.textFaint,marginRight:6,fontSize:10}}>{String.fromCharCode(65+i)}.</span>{ch}
+          </button>;
+        })}
+      </div>
+      {sel&&<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:4,flexWrap:"wrap",gap:10}}>
+        <div style={{fontSize:13,color:sel===q.answer?C.green:C.red,fontStyle:"italic"}}>
+          {sel===q.answer?"✓ Correct!":"✗ "+q.answer}
+        </div>
+        <Btn small onClick={next}>{cur+1>=qs.length?"See Results":"Next →"}</Btn>
+      </div>}
+    </div>
+  </div>;
+}
+
+// ── FLASHCARD ─────────────────────────────────────────────────────
+function FlashcardQuiz({onDone}){
+  const drinks=shuffle([...DRINKS]);
+  const[idx,setIdx]=useState(0);
+  const[flipped,setFlipped]=useState(false);
+  const known=useRef(0);
+  const drink=drinks[idx];
+  const mark=k=>{
+    if(k)known.current++;
+    if(idx+1>=drinks.length)onDone({mode:"flashcard",known:known.current,total:drinks.length});
+    else{setIdx(i=>i+1);setFlipped(false);}
+  };
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Flashcards" right={<span style={{color:C.textDim,fontSize:12}}>{idx+1} / {drinks.length}</span>}/>
+    <PBar val={idx/drinks.length}/>
+    <div style={{maxWidth:540,margin:"0 auto",padding:"32px 18px"}}>
+      <div onClick={()=>setFlipped(f=>!f)}
+        style={{background:C.surface,border:"1px solid "+(flipped?C.primary:C.border),borderRadius:14,padding:"44px 28px",minHeight:280,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",marginBottom:22,transition:"all 0.2s",boxShadow:flipped?"0 0 40px rgba(200,30,30,0.12)":"none"}}>
+        {!flipped?<>
+          <div style={{fontSize:10,color:C.primaryDim,letterSpacing:4,textTransform:"uppercase",marginBottom:18}}>Drink Name</div>
+          <div style={{fontSize:30,color:C.primary,fontWeight:"bold",letterSpacing:2}}>{drink.name}</div>
+          <div style={{fontSize:10,color:C.textFaint,marginTop:24,letterSpacing:2}}>TAP TO REVEAL RECIPE</div>
+        </>:<>
+          <div style={{fontSize:10,color:C.primaryDim,letterSpacing:4,textTransform:"uppercase",marginBottom:18}}>{drink.name}</div>
+          {drink.ingredients.map((ing,i)=><div key={i} style={{fontSize:14,color:C.text,padding:"7px 0",borderBottom:i<drink.ingredients.length-1?"1px solid "+C.border:"none",width:"100%",textAlign:"left"}}>
+            <span style={{color:C.primaryDim,marginRight:10}}>▸</span>{ing}
+          </div>)}
+        </>}
+      </div>
+      {flipped&&<div style={{display:"flex",gap:12}}>
+        <Btn v="danger" full onClick={()=>mark(false)}>✗ Still Learning</Btn>
+        <Btn full onClick={()=>mark(true)}>✓ Got It!</Btn>
+      </div>}
+      {!flipped&&<div style={{textAlign:"center",color:C.textFaint,fontSize:11,letterSpacing:2}}>{DRINKS.length-idx-1} drinks remaining</div>}
+    </div>
+  </div>;
+}
+
+// ── WRITTEN ───────────────────────────────────────────────────────
+function WrittenQuiz({onDone}){
+  const drinks=shuffle([...DRINKS]);
+  const[idx,setIdx]=useState(0);
+  const[typed,setTyped]=useState("");
+  const[submitted,setSubmitted]=useState(false);
+  const[graded,setGraded]=useState(null);
+  const running=useRef({correct:0,possible:0});
+  const drink=drinks[idx];
+
+  const submit=()=>{
+    if(!typed.trim())return;
+    const results=gradeAnswer(drink,typed);
+    const correct=results.filter(r=>r.got).length;
+    running.current.correct+=correct;
+    running.current.possible+=drink.ingredients.length;
+    setGraded({results,correct});
+    setSubmitted(true);
+  };
+
+  const next=()=>{
+    if(idx+1>=drinks.length)onDone({mode:"written",score:running.current.correct,total:running.current.possible});
+    else{setIdx(i=>i+1);setTyped("");setSubmitted(false);setGraded(null);}
+  };
+
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <TopBar title="Written Quiz" right={<span style={{color:C.textDim,fontSize:12}}>{idx+1} / {drinks.length}</span>}/>
+    <PBar val={idx/drinks.length}/>
+    <div style={{maxWidth:540,margin:"0 auto",padding:"32px 18px"}}>
+      <div style={{textAlign:"center",marginBottom:28}}>
+        <p style={{fontSize:10,color:C.primaryDim,letterSpacing:4,textTransform:"uppercase",marginBottom:10}}>What goes in a</p>
+        <h2 style={{fontSize:30,color:C.primary,letterSpacing:2}}>{drink.name}</h2>
+        <p style={{fontSize:11,color:C.textFaint,marginTop:8}}>{drink.ingredients.length} ingredients · amounts count · spelling is forgiving</p>
+      </div>
+
+      {!submitted?<>
+        <textarea value={typed} onChange={e=>setTyped(e.target.value)}
+          placeholder={"2oz Bourbon\n0.75oz Lime Juice\nDash Simple Syrup\n..."}
+          rows={8}
+          style={{width:"100%",background:C.surface,border:"1px solid "+C.borderLt,borderRadius:8,padding:"13px 15px",color:C.text,fontFamily:F,fontSize:13,outline:"none",resize:"vertical",marginBottom:14,boxSizing:"border-box",lineHeight:1.8}}/>
+        <Btn onClick={submit} full disabled={!typed.trim()}>Submit Answer</Btn>
+      </>:<>
+        <div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:10,overflow:"hidden",marginBottom:16}}>
+          {graded.results.map((r,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",borderBottom:i<graded.results.length-1?"1px solid "+C.border:"none",background:r.got?C.greenBg:C.redBg}}>
+            <span style={{color:r.got?C.green:C.red,fontSize:16,flexShrink:0}}>{r.got?"✓":"✗"}</span>
+            <span style={{fontSize:13,color:r.got?C.green:C.red}}>{r.ing}</span>
+          </div>)}
+        </div>
+        <div style={{textAlign:"center",marginBottom:18}}>
+          <span style={{fontSize:20,color:C.primary,fontWeight:"bold"}}>{graded.correct}</span>
+          <span style={{fontSize:14,color:C.textDim}}>/{drink.ingredients.length} ingredients recalled</span>
+        </div>
+        <Btn onClick={next} full>{idx+1>=drinks.length?"See Results":"Next Drink →"}</Btn>
+      </>}
+    </div>
+  </div>;
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────
+function ResultsScreen({results,onRetry,onHome}){
+  const{mode,score,total,known,wrong}=results;
+  const num=mode==="flashcard"?known:score;
+  const pct=total>0?Math.round((num/total)*100):0;
+  const g=pct>=90?{e:"💀",m:"SKULL MASTER",c:"#ff3030"}:
+          pct>=75?{e:"🔥",m:"CRUSHING IT",c:"#ff8c00"}:
+          pct>=55?{e:"⚡",m:"GETTING THERE",c:"#d4a553"}:
+          {e:"📖",m:"STUDY MORE",c:"#888"};
+  return <div style={{minHeight:"100vh",background:BG,fontFamily:F,color:C.text}}>
+    <div style={{maxWidth:500,margin:"0 auto",padding:"52px 18px 20px",textAlign:"center"}}>
+      <div style={{fontSize:64,marginBottom:12,filter:"drop-shadow(0 0 30px rgba(200,30,30,0.5))"}}>{g.e}</div>
+      <h1 style={{fontSize:20,color:C.primary,textTransform:"uppercase",letterSpacing:4,marginBottom:22}}>
+        {mode==="flashcard"?"Study Complete":"Results"}
+      </h1>
+      <div style={{fontSize:72,fontWeight:"bold",color:g.c,lineHeight:1}}>
+        {num}<span style={{fontSize:30,color:C.textDim}}>/{total}</span>
+      </div>
+      <div style={{fontSize:16,color:g.c,margin:"8px 0 4px",letterSpacing:2}}>{g.m}</div>
+      <div style={{fontSize:13,color:C.textDim,marginBottom:32}}>{pct}% {mode==="flashcard"?"known":"correct"}</div>
+
+      {wrong&&wrong.length>0&&<div style={{background:C.surface,border:"1px solid "+C.border,borderRadius:10,padding:"16px 18px",marginBottom:24,textAlign:"left",maxHeight:220,overflowY:"auto"}}>
+        <p style={{color:C.red,fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>⚠ Review These</p>
+        {wrong.map((q,i)=><div key={i} style={{marginBottom:8,paddingBottom:8,borderBottom:i<wrong.length-1?"1px solid "+C.border:"none"}}>
+          <div style={{fontSize:11,color:C.textDim,marginBottom:3}}>{q.prompt}</div>
+          <div style={{fontSize:13,color:C.green}}>→ {q.answer}</div>
+        </div>)}
+      </div>}
+
+      {pct>=80&&<div style={{background:"rgba(200,30,30,0.08)",border:"1px solid "+C.primaryDim,borderRadius:8,padding:"14px 18px",marginBottom:24,fontSize:13,color:C.textDim,lineHeight:1.7}}>
+        🍸 Quiz is tomorrow. You're ready.
+      </div>}
+
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        <Btn onClick={onRetry} full>↺ Try Again</Btn>
+        <Btn v="secondary" onClick={onHome} full>⌂ Home</Btn>
+      </div>
+    </div>
+  </div>;
+}
+
+// ── ROOT ──────────────────────────────────────────────────────────
+function App(){
+  const[screen,setScreen]=useState("home");
+  const[mode,setMode]=useState(null);
+  const[results,setResults]=useState(null);
+
+  const start=m=>{setMode(m);setResults(null);setScreen("quiz");};
+  const done=r=>{setResults(r);setScreen("results");};
+
+  if(screen==="home") return <HomeScreen onStart={start}/>;
+  if(screen==="quiz"){
+    if(mode==="flashcard") return <FlashcardQuiz onDone={done}/>;
+    if(mode==="written")   return <WrittenQuiz   onDone={done}/>;
+    return <MCQuiz onDone={done}/>;
+  }
+  if(screen==="results") return <ResultsScreen results={results} onRetry={()=>start(mode)} onHome={()=>setScreen("home")}/>;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
